@@ -3,8 +3,11 @@ const { app, BrowserWindow, Menu} = require('electron')
 const ip = require('ip');
 const fs = require("fs");
 
-let mainWindow
+console.log(__dirname);
+process.chdir(__dirname);
 
+let mainWindow
+let ps
 function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
@@ -22,18 +25,19 @@ function createWindow() {
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {    
     mainWindow = null
+    ps.kill();
   })
   
   //watch the json files for changes
-  fs.watch("./data/beers.json", ()=>{
+  fs.watch("data/beers.json", ()=>{
     mainWindow.webContents.send("dataChanged", "beers");
   });
 
-  fs.watch("./data/taps.json", ()=>{
+  fs.watch("data/taps.json", ()=>{
     mainWindow.webContents.send("dataChanged","taps");
   });
 
-  fs.watch("./data/onDeck.json", ()=>{
+  fs.watch("data/onDeck.json", ()=>{
     mainWindow.webContents.send("dataChanged","onDeck");
   });
 }
@@ -44,7 +48,7 @@ app.on('ready', ()=>{
 
   //launch the web server
   const { fork } = require('child_process');
-  const ps = fork(`${__dirname}/server.js`);
+  ps = fork(`${__dirname}/server.js`);
   
 })
 

@@ -1,7 +1,7 @@
 {
-  "name": "electron-quick-start",
-  "version": "1.0.0",
-  "description": "A minimal Electron application",
+  "name": "beer-on-tap",
+  "version": "0.1.0",
+  "description": "Create a beer Menu to add in resturants or bar",
   "main": "main.js",
   "scripts": {
     "start": "electron ."
@@ -17,11 +17,11 @@
   "author": "GitHub",
   "license": "CC0-1.0",
   "devDependencies": {
-    "electron": "^6.0.9"
+    "electron": "^6.0.9",
+    "electron-packager": "^14.0.6"
   },
   "dependencies": {
     "express": "^4.17.1",
-    "ip": "^1.1.5",
-    "node-static": "^0.7.11"
+    "ip": "^1.1.5"
   }
 }

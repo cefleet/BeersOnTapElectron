@@ -16,8 +16,8 @@ document.addEventListener("keydown", event => {
             }
             break;
         //uncomment these if you want to have dev tools open up
-        //case "F12":
-        //    remote.getCurrentWindow().toggleDevTools();
+        case "F12":
+            remote.getCurrentWindow().toggleDevTools();
             
     }
 });
@@ -30,7 +30,9 @@ ipcRenderer.on('viewChanged', function (ev, data) {
 });
 
 ipcRenderer.on('dataChanged', ()=>{
-    remote.getCurrentWindow().reload();
+    if(view === "present"){
+        remote.getCurrentWindow().reload();
+    }
 })
 
 
