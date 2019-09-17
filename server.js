@@ -1,15 +1,13 @@
 const fs = require('fs');
 const express = require('express');
-//const bodyParser = require('body-parser');
 const app = express();
 app.use(express.json())
 app.use((req,res,next)=>{
-    res.header("Access-Control-Allow-Origin", "*"); // update to match the domain you will make the request from
+    res.header("Access-Control-Allow-Origin", "*");
     res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     next();
 })
-//app.use(bodyParser);
-app.use(express.static('build'));
+app.use(express.static('public'));
 
 process.chdir(__dirname);
 
@@ -49,6 +47,7 @@ app.post("/setTaps", function(req,res){
     })
 });
 
+//if there is a conflict this port should be able to be changed. 
 const server = app.listen(7767, function () {
     console.log('7767')
 });
