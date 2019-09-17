@@ -1,26 +1,30 @@
 // Modules to control application life and create native browser window
-const {app, BrowserWindow} = require('electron')
-const path = require('path')
+const { app, BrowserWindow, Menu} = require('electron')
+//const path = require('path')
+const ip = require('ip');
+const fs = require("fs");
 
 // Keep a global reference of the window object, if you don't, the window will
 // be closed automatically when the JavaScript object is garbage collected.
 let mainWindow
 
-function createWindow () {
+function createWindow() {
   // Create the browser window.
   mainWindow = new BrowserWindow({
     width: 800,
     height: 600,
+    fullscreen:true,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js')
+      //preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: true
     }
   })
 
   // and load the index.html of the app.
-  mainWindow.loadFile('index.html')
+  mainWindow.loadFile('build/index.html')
 
   // Open the DevTools.
-  // mainWindow.webContents.openDevTools()
+  //mainWindow.webContents.openDevTools()
 
   // Emitted when the window is closed.
   mainWindow.on('closed', function () {
@@ -29,12 +33,33 @@ function createWindow () {
     // when you should delete the corresponding element.
     mainWindow = null
   })
+  
+  fs.watch("./data/beers.json", ()=>{
+    mainWindow.webContents.send("dataChanged", "beers");
+  });
+
+  fs.watch("./data/taps.json", ()=>{
+    mainWindow.webContents.send("dataChanged","taps");
+  });
+
+  fs.watch("./data/onDeck.json", ()=>{
+    mainWindow.webContents.send("dataChanged","onDeck");
+  });
+
+
 }
 
 // This method will be called when Electron has finished
 // initialization and is ready to create browser windows.
 // Some APIs can only be used after this event occurs.
-app.on('ready', createWindow)
+app.on('ready', ()=>{
+  createWindow();
+  //mainWindow.toggleDevTools();
+
+  const { fork } = require('child_process');
+  const ps = fork(`${__dirname}/server.js`);
+  
+})
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
@@ -51,3 +76,28 @@ app.on('activate', function () {
 
 // In this file you can include the rest of your app's specific main process
 // code. You can also put them in separate files and require them here.
+
+var menu = Menu.buildFromTemplate([
+  {
+    label: 'Menu',
+    submenu: [
+      {
+        label: 'Present', accelerator: 'CmdOrCtrl+Shift+C', click() {
+          mainWindow.webContents.send('viewChanged')
+        }
+      },
+      //{ label: 'Login',disabled:true },
+      { type: 'separator' },
+      {
+        label: 'Quit', click() {
+          app.quit()
+        }
+      },
+      { type: 'separator' },
+      {
+        label:`Update Url : http://${ip.address()}:7767`
+      }
+    ]
+  }
+])
+Menu.setApplicationMenu(menu);
